@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tic Tac Toe - Play Online</title>
+<meta name="description" content="Play Tic Tac Toe online with a friend. Free, simple, works on phone and computer.">
+<style>
+:root{--board:#1f3d33;--line:#e9e4d4;--x:#f6f1e1;--o:#f2c14e;--bg:#14261f}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg);color:var(--line);font-family:Georgia,serif;padding:16px}
+h1{margin:0;font-size:2rem;font-weight:700}
+#status{font-size:1.2rem;min-height:1.5em}
+#board{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:min(90vw,340px);background:var(--line);padding:6px;border-radius:12px}
+.cell{aspect-ratio:1;background:var(--board);border:0;font-family:inherit;font-size:3.2rem;font-weight:700;cursor:pointer;color:var(--x);border-radius:6px}
+.cell.o{color:var(--o)}
+.cell.win{background:#3b6b57}
+.cell:focus-visible,button:focus-visible{outline:3px solid var(--o)}
+#score{display:flex;gap:24px;font-size:1.1rem}
+#reset{background:var(--o);color:#1a1a1a;border:0;padding:10px 22px;font-size:1rem;font-family:inherit;border-radius:8px;cursor:pointer}
+</style>
+</head>
+<body>
+<h1>Tic Tac Toe</h1>
+<div id="score"><span>X: <b id="sx">0</b></span><span>Draw: <b id="sd">0</b></span><span>O: <b id="so">0</b></span></div>
+<div id="status"></div>
+<div id="board"></div>
+<button id="reset">New game</button>
+<script>
+const W=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+let b,turn,over,sc={X:0,O:0,D:0};
+const bd=document.getElementById('board'),st=document.getElementById('status');
+function start(){
+  b=Array(9).fill('');turn='X';over=false;bd.innerHTML='';
+  for(let i=0;i<9;i++){
+    const c=document.createElement('button');
+    c.className='cell';c.setAttribute('aria-label','Cell '+(i+1));
+    c.onclick=()=>play(i,c);bd.appendChild(c);
+  }
+  st.textContent="X's turn";
+}
+function play(i,c){
+  if(over||b[i])return;
+  b[i]=turn;c.textContent=turn;
+  if(turn==='O')c.classList.add('o');
+  const w=W.find(l=>l.every(k=>b[k]===turn));
+  if(w){
+    over=true;w.forEach(k=>bd.children[k].classList.add('win'));
+    sc[turn]++;st.textContent=turn+' wins!';
+  }else if(b.every(Boolean)){
+    over=true;sc.D++;st.textContent="It's a draw.";
+  }else{
+    turn=turn==='X'?'O':'X';st.textContent=turn+"'s turn";
+  }
+  document.getElementById('sx').textContent=sc.X;
+  document.getElementById('so').textContent=sc.O;
+  document.getElementById('sd').textContent=sc.D;
+}
+document.getElementById('reset').onclick=start;
+start();
+</script>
+</body>
+</html>
